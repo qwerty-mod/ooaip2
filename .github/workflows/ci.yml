@@ -1,0 +1,35 @@
+name: Code Verification
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    # собираем и тестируем за один шаг генерируя отчет о покрытии кодом
+    - name: Test with Coverage
+      run: |
+        dotnet test --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./TestResults/
+
+    # генерируем сводку покрытия в формате Markdown
+    - name: ReportGenerator
+      uses: danielpalme/ReportGenerator-action@5.3.0
+      with:
+        reports: '**/TestResults/cobertura.xml'
+        targetdir: 'coveragereport'
+        reporttypes: 'MarkdownSummary'
+
+    # публикуем отчет в сводку шагов GitHub Actions
+    - name: Publish Coverage Summary
+      run: cat coveragereport/Summary.md >> $GITHUB_STEP_SUMMARY
