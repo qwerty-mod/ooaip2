@@ -17,19 +17,11 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
-    # собираем и тестируем за один шаг генерируя отчет о покрытии кодом
-    - name: Test with Coverage
-      run: |
-        dotnet test --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./TestResults/
+    - name: Restore dependencies
+      run: dotnet restore
 
-    # генерируем сводку покрытия в формате Markdown
-    - name: ReportGenerator
-      uses: danielpalme/ReportGenerator-action@5.3.0
-      with:
-        reports: '**/TestResults/cobertura.xml'
-        targetdir: 'coveragereport'
-        reporttypes: 'MarkdownSummary'
+    - name: Build project
+      run: dotnet build --no-restore --configuration Release
 
-    # публикуем отчет в сводку шагов GitHub Actions
-    - name: Publish Coverage Summary
-      run: cat coveragereport/Summary.md >> $GITHUB_STEP_SUMMARY
+    - name: Test project
+      run: dotnet test --no-build --configuration Release
