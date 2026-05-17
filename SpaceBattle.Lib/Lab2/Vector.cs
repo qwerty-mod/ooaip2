@@ -15,7 +15,7 @@ public class Vector
     {
         if (v1.Size != v2.Size)
         {
-            throw new ArgumentException("Векторы должны быть одинаковой размерности.");
+            throw new ArgumentException("векторы должны быть одинаковой размерности");
         }
 
         int[] result = new int[v1.Size];
