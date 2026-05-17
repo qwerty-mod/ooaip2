@@ -1,0 +1,15 @@
+[Bb]in/
+[Oo]bj/
+[Log]/
+
+
+.vscode/
+.idea/
+*.sln.docstates
+*.user
+*.suo
+
+
+TestResults/
+*.sourcelink
+*.waveform
