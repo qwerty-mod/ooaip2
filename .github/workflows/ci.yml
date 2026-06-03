@@ -23,5 +23,17 @@ jobs:
     - name: Build project
       run: dotnet build --no-restore --configuration Release
 
-    - name: Test project
-      run: dotnet test --no-build --configuration Release
+    - name: Test and Collect Coverage
+      # Здесь мы собираем покрытие в формат opencover
+      run: dotnet test --no-build --configuration Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/coverage.opencover.xml
+
+    - name: Report and Check Coverage
+      uses: danielpalme/reportgenerator-github-action@5.3.8
+      with:
+        reports: '**/TestResults/coverage.opencover.xml'
+        targetdir: 'coveragereport'
+        reporttypes: 'MarkdownSummary'
+        mincoverage: '90.0001' 
+
+    - name: Publish coverage report
+      run: cat coveragereport/Summary.md >> $GITHUB_STEP_SUMMARY
